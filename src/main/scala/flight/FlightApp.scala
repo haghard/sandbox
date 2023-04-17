@@ -20,11 +20,11 @@ object FlightApp {
 
     final case class Flight[A <: Airport: ClassTag, B <: Airport: ClassTag](departureTs: Long, arrivalTs: Long)
         extends Itinerary[A, B] {
-      override def toString: String =
+      override val toString: String =
         s"${implicitly[ClassTag[A]].runtimeClass.getSimpleName}($departureTs) ~> ${implicitly[ClassTag[B]].runtimeClass.getSimpleName}($arrivalTs)"
     }
 
-    final case class Both[A <: Airport, B <: Airport, C <: Airport](a: Itinerary[A, B], b: Itinerary[B, C])
+    final case class Both[A <: Airport, B <: Airport, C <: Airport](left: Itinerary[A, B], right: Itinerary[B, C])
         extends Itinerary[A, C]
 
     implicit class ItineraryOps[A <: Airport, B <: Airport](val self: Itinerary[A, B]) extends AnyVal {
@@ -63,8 +63,8 @@ object FlightApp {
           println(f.toString)
         case b: Both[from, via, to] =>
           implicitly[from `≠` to]
-          draw(b.a)
-          draw(b.b)
+          draw(b.left)
+          draw(b.right)
       }
 
     def drawFromNYK(it: Itinerary[NYK, _]): Unit =
@@ -73,8 +73,8 @@ object FlightApp {
           println(f.toString)
         case b: Both[from, via, to] =>
           implicitly[from `≠` to]
-          draw(b.a)
-          draw(b.b)
+          draw(b.left)
+          draw(b.right)
       }
   }
 
@@ -91,10 +91,10 @@ object FlightApp {
     flight[NYK, DEN](1, 2) <~ flight[DEN, NYK](3, 5)
 
     // constraint violation: Actual flight.FlightApp.LAL but expected flight.FlightApp.NYK
-    // flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
+    //flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
 
     // constraint violation: A flight cannot start at flight.FlightApp.NYK and stop at flight.FlightApp.NYK
-    // flight[NYK, NYK](1, 2)
+    //flight[NYK, NYK](1, 2)
 
     println("*********")
   }

@@ -5,8 +5,9 @@ import izumi.reflect.Tag
 //https://youtu.be/48fpPffgnMo?list=LL
 //https://stackoverflow.com/questions/12135293/type-constraint-for-type-inequality-in-scala
 
-//Type constraint for type inequality in scala [duplicate]
-abstract class NotContains[A, B] extends Serializable
+
+//Type constraint for type inequality in scala
+sealed trait NotContains[A, B]
 object NotContains {
   implicit def nsub[A, B]: A NotContains B = new NotContains[A, B] {}
 
@@ -43,7 +44,7 @@ object Program {
   def main(args: Array[String]): Unit = {
 
     val columns =
-      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) // ++ Column(false)
+      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) //++ Column(false)
 
     /*
     implicitly[Column[Int] with Column[String] with Column[Boolean] <:< Column[Boolean]]
