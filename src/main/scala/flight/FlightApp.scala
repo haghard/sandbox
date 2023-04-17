@@ -90,11 +90,11 @@ object FlightApp {
 
     flight[NYK, DEN](1, 2) <~ flight[DEN, NYK](3, 5)
 
-    //constraint violation: Actual flight.FlightApp.LAL but expected flight.FlightApp.NYK
-    //flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
+    // constraint violation: Actual flight.FlightApp.LAL but expected flight.FlightApp.NYK
+    // flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
 
-    //constraint violation: A flight cannot start at flight.FlightApp.NYK and stop at flight.FlightApp.NYK
-    //flight[NYK, NYK](1, 2)
+    // constraint violation: A flight cannot start at flight.FlightApp.NYK and stop at flight.FlightApp.NYK
+    // flight[NYK, NYK](1, 2)
 
     println("*********")
   }
@@ -106,4 +106,4 @@ Another example:
 Shipment
  Pickup_Stop(InTransit->Arrived->Departed)
  Delivery_Stop(InTransit->Arrived->Departed)
-*/
+ */

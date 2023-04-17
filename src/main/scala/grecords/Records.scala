@@ -43,11 +43,14 @@ object Program {
   def main(args: Array[String]): Unit = {
 
     val columns =
-      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) //++ Column(false)
+      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) // ++ Column(false)
 
+    /*
     implicitly[Column[Int] with Column[String] with Column[Boolean] <:< Column[Boolean]]
     implicitly[Column[Int] with Column[String] with Column[Boolean] <:< Column[String]]
     implicitly[Column[Int] with Column[String] with Column[Boolean] <:< Column[Int]]
+    implicitly[java.lang.Long <:< Number]
+     */
 
     columns.get[Int]
     columns.get[Boolean]
@@ -55,9 +58,9 @@ object Program {
     columns.get[List[Int]]
     columns.get[List[String]]
 
-    //columns.get[Nothing]
+    // columns.get[Nothing]
 
-    //Column constraint violation: Cannot find grecords.Column[Byte] in [grecords.Column[Int] with grecords.Column[String] with grecords.Column[Boolean] with grecords.Column[List[Int]] with grecords.Column[List[String]]]
-    //columns.get[Byte]
+    // Column constraint violation: Cannot find grecords.Column[Byte] in [grecords.Column[Int] with grecords.Column[String] with grecords.Column[Boolean] with grecords.Column[List[Int]] with grecords.Column[List[String]]]
+    // columns.get[Byte]
   }
 }
