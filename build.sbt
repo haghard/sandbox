@@ -1,9 +1,9 @@
 import sbt._
 
-val scala2Version = "2.13.10"
-val scala3Version = "3.2.2"
+val scala2Version = "2.13.14"
+val scala3Version = "3.4.2"
 
-val AmmoniteVersion = "2.5.8"
+val AmmoniteVersion = "3.0.0-M2-9-88291dd8"
 
 val scalac3_Options = Seq(
   "-deprecation",
@@ -11,10 +11,12 @@ val scalac3_Options = Seq(
   "-language:implicitConversions",
   "-unchecked",
   "-Ykind-projector",
-  "-Ysafe-init", //guards against forward access reference
+  "-Ysafe-init",
   "-Xfatal-warnings",
-  //"-Ytasty-reader",
-) //++ Seq("-rewrite", "-indent") ++ Seq("-source", "future-migration") //future
+  "-rewrite",
+  "-source",
+  "future-migration"
+)
 
 val scala2_13_Options2 = Seq(
   // Feature options
@@ -127,16 +129,11 @@ lazy val root = project
 
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
-      "dev.zio"   %% "izumi-reflect" % "2.3.0",
+      "dev.zio"   %% "izumi-reflect" % "2.3.8",
       "com.lihaoyi" % "ammonite" % AmmoniteVersion % "test" cross CrossVersion.full
     ),
-
-    /*libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    )*/
-
-    libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
+    
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test,
 
     Compile / scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -156,7 +153,7 @@ lazy val root = project
     crossScalaVersions := Seq(scala3Version, scala2Version)
   )
 
-scalafmtOnCompile := false //true
+scalafmtOnCompile := true
 
 addCommandAlias("c", "compile")
 addCommandAlias("r", "reload")
@@ -173,7 +170,7 @@ Test / sourceGenerators += Def.task {
 }.taskValue
 
 
-//++3.2.2
-//++2.13.10
+//++3.4.2
+//++2.13.14
 //show scalacOptions
 

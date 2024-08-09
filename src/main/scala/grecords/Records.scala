@@ -5,15 +5,14 @@ import izumi.reflect.Tag
 //https://youtu.be/48fpPffgnMo?list=LL
 //https://stackoverflow.com/questions/12135293/type-constraint-for-type-inequality-in-scala
 
-
 //Type constraint for type inequality in scala
 sealed trait NotContains[A, B]
 object NotContains {
-  implicit def nsub[A, B]: A NotContains B = new NotContains[A, B] {}
+  implicit def nsub[A, B]: A `NotContains` B = new NotContains[A, B] {}
 
   @scala.annotation.implicitAmbiguous("Column constraint violation: Couldn't add ${B} type twice in [${A}] !")
-  implicit def nsubAmbig1[A, B >: A]: A NotContains B = sys.error("Unexpected call")
-  implicit def nsubAmbig2[A, B >: A]: A NotContains B = sys.error("Unexpected call")
+  implicit def nsubAmbig1[A, B >: A]: A `NotContains` B = sys.error("Unexpected call")
+  implicit def nsubAmbig2[A, B >: A]: A `NotContains` B = sys.error("Unexpected call")
 }
 
 @scala.annotation.implicitNotFound("Column constraint violation: Couldn't find ${Out} in [${In}] !")
@@ -23,14 +22,15 @@ object Contains {
     new Contains[A, A] {}
 }
 
-final case class Column[+T] private (private val map: Map[Tag[_], Any])
-object Column {
-  implicit class HSetOps[C <: Column[_]](self: C) {
-    // |+|
-    def ++[A <: Column[_]](that: A)(implicit ev: C NotContains A): C with A =
-      new Column(self.map + that.map.head).asInstanceOf[C with A]
+final case class Column[+T](private val map: Map[Tag[?], Any])
 
-    def get[A: Tag](implicit ev: C Contains Column[A]): A =
+object Column {
+  implicit class HSetOps[C <: Column[?]](self: C) {
+    // |+|
+    def ++[A <: Column[?]](that: A)(implicit ev: C `NotContains` A): C & A =
+      new Column(self.map + that.map.head).asInstanceOf[C & A]
+
+    def get[A: Tag](implicit ev: C `Contains` Column[A]): A =
       self.map(implicitly[Tag[A]]).asInstanceOf[A]
   }
 
@@ -44,7 +44,7 @@ object Program {
   def main(args: Array[String]): Unit = {
 
     val columns =
-      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) //++ Column(false)
+      Column(1) ++ Column("a") ++ Column(true) ++ Column(List(1, 2)) ++ Column(List("1", "2")) // ++ Column(false)
 
     /*
     implicitly[Column[Int] with Column[String] with Column[Boolean] <:< Column[Boolean]]

@@ -32,14 +32,15 @@ object FlightApp {
       def ~>[C <: Airport](that: Itinerary[B, C]): Itinerary[A, C] =
         Itinerary.Both(self, that)
 
-      def <~[C <: Airport](that: Itinerary[B, C])(implicit ev: A IsEqualTo C): Itinerary[A, C] =
+      def <~[C <: Airport](that: Itinerary[B, C])(implicit ev: A `IsEqualTo` C): Itinerary[A, C] =
         Itinerary.Both(self, that)
     }
 
     def flight[From <: Airport: ClassTag, To <: Airport: ClassTag](
-      departureTs: Long,
-      arrivalTs: Long
-    )(implicit ev: From `≠` To) =
+        departureTs: Long,
+        arrivalTs: Long,
+      )(implicit ev: From `≠` To
+      ) =
       Flight[From, To](departureTs, arrivalTs) // If From ≠ To, the ev is generated. Otherwise,
 
     /*def match0[From <: Airport, To <: Airport](it: Itinerary[From, To]): Int =
@@ -48,7 +49,7 @@ object FlightApp {
         //case _                   => 0
       }*/
 
-    def draw0(it: Itinerary[_, _]): Unit =
+    def draw0(it: Itinerary[?, ?]): Unit =
       it match {
         case f @ Flight(_, _) =>
           println(f.toString)
@@ -57,7 +58,7 @@ object FlightApp {
           draw0(right)
       }
 
-    def draw(it: Itinerary[_, _]): Unit =
+    def draw(it: Itinerary[?, ?]): Unit =
       it match {
         case f: Flight[from, to] =>
           println(f.toString)
@@ -67,7 +68,7 @@ object FlightApp {
           draw(b.right)
       }
 
-    def drawFromNYK(it: Itinerary[NYK, _]): Unit =
+    def drawFromNYK(it: Itinerary[NYK, ?]): Unit =
       it match {
         case f: Flight[from, to] =>
           println(f.toString)
@@ -91,10 +92,10 @@ object FlightApp {
     flight[NYK, DEN](1, 2) <~ flight[DEN, NYK](3, 5)
 
     // constraint violation: Actual flight.FlightApp.LAL but expected flight.FlightApp.NYK
-    //flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
+    // flight[NYK, DEN](1, 2) <~ flight[DEN, LAL](3, 5)
 
     // constraint violation: A flight cannot start at flight.FlightApp.NYK and stop at flight.FlightApp.NYK
-    //flight[NYK, NYK](1, 2)
+    // flight[NYK, NYK](1, 2)
 
     println("*********")
   }
