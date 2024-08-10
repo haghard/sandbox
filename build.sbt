@@ -18,7 +18,7 @@ val scalac3_Options = Seq(
   "future-migration"
 )
 
-val scala2_13_Options2 = Seq(
+/*val scala2_13_Options2 = Seq(
   // Feature options
   "-encoding", "utf-8",
   "-explaintypes",
@@ -61,10 +61,16 @@ val scala2_13_Options2 = Seq(
   "-Wunused:patvars",
   "-Wunused:privates",
   "-Wvalue-discard",
-)
+)*/
 
 val scala2_13_Options = Seq(
-  "-Xsource:3",
+  //"-Xsource:3",
+
+  //When migrating from Scala 2.13 to 3, the 2.13.13 release introduces the `-Xsource:3-cross` flag for users who want to
+  // cross build their code on both Scala 2.13 and 3, allowing to adopt some Scala 3 semantics and skip warnings which
+  // don't bring value in cross-built projects
+  "-Xsource:3-cross",
+
   "-target:jvm-17",
   "-explaintypes", // Explain type errors in more detail.
   "-feature", // Emit warning and location for usages of features that should be imported explicitly.
@@ -110,12 +116,12 @@ val scala2_13_Options = Seq(
   //https://alexn.org/blog/2020/05/26/scala-fatal-warnings/
   /*
     You still want to keep the exhaustiveness checks as errors.
-    What this does is to turn all warnings into errors, except for deprecation messages, which are still left as warnings. To break it down:
-    cat=deprecation refers to deprecation messages (classes/methods marked with @deprecated being called)
-    and :ws says that for these warnings a “warning summary” should be shown
-    any:e says that for any other kind of warning, signal it via an error
+    What this does is to turn all warnings into errors, except for deprecation messages, which are still left as warnings.
+    To break it down:
+      cat=deprecation refers to deprecation messages (classes/methods marked with @deprecated being called)
+      ws says that for these warnings a “warning summary” should be shown
+      any:e says that for any other kind of warning, signal it via an error
   */
-
   "-Wconf:cat=deprecation:ws,any:e",
   //OR
   //"-Wconf:cat=other-match-analysis:error", //Make only some warnings fatal: Transform exhaustivity warnings into errors.

@@ -95,6 +95,7 @@ object FlightApp {
 
     val a = flight[NYK, DEN](1, 2) ~> flight[DEN, LAL](3, 5)
     draw(a)
+    drawFromNYK(a)
 
     // drawFromNYK(flight[DEN, NYK](1, 2))
 
@@ -110,11 +111,3 @@ object FlightApp {
     println("*********")
   }
 }
-
-/*
-Another example:
-
-Shipment
- Pickup_Stop(InTransit->Arrived->Departed)
- Delivery_Stop(InTransit->Arrived->Departed)
- */
