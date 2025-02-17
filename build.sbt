@@ -1,9 +1,15 @@
 import sbt._
 
-val scala2Version = "2.13.14"
-val scala3Version = "3.4.2"
+val scala2Version = "2.13.16"
+val scala3Version = "3.3.0"
+//val scala3Version = "3.4.2"
+//val scala3Version = "3.6.3"
 
-val AmmoniteVersion = "3.0.0-M2-9-88291dd8"
+//https://repo1.maven.org/maven2/com/lihaoyi/ammonite_3.4.2/3.0.0-M2-9-88291dd8/
+//val AmmoniteVersion = "3.0.0-M2-9-88291dd8"
+
+//val AmmoniteVersion = "3.0.1"
+//val AmmoniteVersion = "3.0.0"
 
 val scalac3_Options = Seq(
   "-deprecation",
@@ -136,7 +142,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
       "dev.zio"   %% "izumi-reflect" % "2.3.8",
-      "com.lihaoyi" % "ammonite" % AmmoniteVersion % "test" cross CrossVersion.full
+      //"com.lihaoyi" % "ammonite" % AmmoniteVersion % "test" cross CrossVersion.full
     ),
     
     libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test,
@@ -151,7 +157,6 @@ lazy val root = project
       }
     },
 
-    // To make the default compiler and REPL use Dotty
     //scalaVersion := scala3Version,
     scalaVersion := scala2Version,
 
@@ -169,14 +174,19 @@ addCommandAlias("r", "reload")
 //run / fork := true
 
 // ammonite repl
+/*
+
 Test / sourceGenerators += Def.task {
   val file = (Test / sourceManaged).value / "amm.scala"
   IO.write(file, """object amm extends App { ammonite.Main().run() }""")
   Seq(file)
 }.taskValue
+*/
 
 
+
+//++3.3.1
 //++3.4.2
-//++2.13.14
+//++2.13.16
 //show scalacOptions
 

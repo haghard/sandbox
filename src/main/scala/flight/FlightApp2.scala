@@ -39,13 +39,13 @@ object Itinerary2 {
 
   implicit class ItineraryOps[A <: Airport2, B <: Airport2](private val self: Itinerary2[A, B]) extends AnyVal {
     def ~>[C <: Airport2](that: Itinerary2[B, C]): Itinerary2[A, C] =
-      Itinerary2.Both(self, that)
+      Itinerary2.Both[A, B, C](self, that)
 
     def <~[C <: Airport2](that: Itinerary2[B, C])(implicit ev: A `IsEqualTo` C): Itinerary2[A, C] =
-      Itinerary2.Both(self, that)
+      Itinerary2.Both[A, B, C](self, that)
   }
 
-  def flight[From <: Airport2, To <: Airport2](from: From, to: To)(implicit ev: From ≠ To) =
+  def flight[From <: Airport2, To <: Airport2](from: From, to: To)(implicit ev: From ≠ To): Itinerary2[From, To] =
     Flight[From, To](from, to)
 
   def draw(it: Itinerary2[?, ?]): Unit =
@@ -68,11 +68,12 @@ object FlightApp2 {
     val a = flight(CHI(), ATL()) ~> flight(ATL(), NYK()) ~> flight(NYK(), DAL()) ~> flight(DAL(), CHA())
     draw(a)
 
-    // flight(CHI(1), CHI(2))
+    println("2 leg flight")
+    val backAndForth = flight(CHI(), ATL()) <~ flight(ATL(), CHI())
+    draw(backAndForth)
 
-    // flight(CHI(1), ATL(2)) <~ flight(ATL(3), NYK(4))
+    // flight(CHI(), CHI())
+    // flight(CHI(), ATL()) <~ flight(ATL(), NYK())
 
-    println("*************")
   }
-
 }
