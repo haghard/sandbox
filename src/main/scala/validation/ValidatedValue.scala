@@ -1,7 +1,6 @@
 package validation
 
 import ValidatedValue._
-
 //https://scastie.scala-lang.org/k4jfLhYCQxm0DkUrDMTCLg
 sealed trait ValidatedValue[+A] { self =>
 
@@ -77,8 +76,8 @@ object ValidatedValue {
 }
 
 object ValidatedValueProgram extends App {
+  import Flatten._
 
-  // --------------------------------------------------------------------------------
   val row = DbRow(1, 42.2, "hello", Some(0xff.toByte), List(1, 2, 3))
   val maybeRow: Option[DbRow] = Some(row) // None
 

@@ -41,12 +41,12 @@ object Validator {
   implicit class ValidatorOps[A](val self: Validator[A]) extends AnyVal {
 
     def run: Either[List[String], A] = {
-      val maybeErrors = eval(self, List.empty[String])
+      val maybeErrors = eval[A](self, List.empty[String])
       if (maybeErrors.nonEmpty) Left(maybeErrors) else Right(buildTuple(self))
     }
 
-    private def eval(
-        v: Validator[_],
+    private def eval[A](
+        v: Validator[A],
         errors: List[String],
       ): List[String] =
       v match {
@@ -63,7 +63,7 @@ object Validator {
           v
         case b @ Validator.Both(_, _, _) =>
           val size = b.tupleSize
-          // println("SIZE: " + size)
+          println("SIZE: " + size)
           val array: Array[Any] = Array.ofDim(size)
           fillArray(array, v, 0, List.empty)
           arrayToTuple[A](array, size)
