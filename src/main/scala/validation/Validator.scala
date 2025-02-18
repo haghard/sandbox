@@ -3,13 +3,6 @@ package validation
 import TupleSize._
 import Zipper._
 
-final case class DbRow(
-    a: Int,
-    b: Double,
-    c: String,
-    aOpt: Option[Int],
-    digits: List[Int])
-
 sealed trait Validator[A] { self =>
 
   def ++[B](that: Validator[B])(implicit Z: Zipper[A, B]): Validator[Z.Out] =
@@ -119,20 +112,12 @@ object ValidatorProgram extends App {
 
   val row = DbRow(3, 42.2, "hello", Some(0xff.toByte), List(1, 2, 3))
 
-  val validator =
+  val validator1 =
     row.a.validate("aaa")(_ > -4) ++
       row.b.validate("bbb")(_ == 42.2) ++
       row.c.validate("ccc")(_.startsWith("he")) ++
       row.aOpt.validate("ddd")(_.isDefined) ++
       row.digits.validate("eee")(_.forall(_ > 0))
 
-  /*validation.run match {
-    case Left(er) =>
-      println("Errors: " + er.mkString(","))
-
-    case Right(tuple) =>
-      val (a, b, c, aOpt, list) = tuple
-  }*/
-
-  println(validator.run)
+  println(validator1.run)
 }
