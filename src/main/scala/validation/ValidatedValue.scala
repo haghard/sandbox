@@ -1,7 +1,7 @@
 package validation
 
 import ValidatedValue._
-//https://scastie.scala-lang.org/k4jfLhYCQxm0DkUrDMTCLg
+
 sealed trait ValidatedValue[+A] { self =>
 
   def flatMap[B](f: A => ValidatedValue[B]): ValidatedValue[B] =

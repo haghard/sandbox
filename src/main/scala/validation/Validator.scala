@@ -1,18 +1,13 @@
 package validation
 
-import TupleSize._
-import Zipper._
+import Zipper.*
+
+import scala.annotation.tailrec
 
 sealed trait Validator[A] { self =>
 
   def ++[B](that: Validator[B])(implicit Z: Zipper[A, B]): Validator[Z.Out] =
     Validator.Both[A, B, Z.Out](self, that, Z)
-
-  def tupleSize: Int =
-    self match {
-      case Validator.Predicate(_, _, _, tupleSize) => tupleSize.size
-      case Validator.Both(left, right, _)          => left.tupleSize + right.tupleSize
-    }
 }
 
 object Validator {
@@ -21,15 +16,13 @@ object Validator {
       value: A,
       p: A => Boolean,
       errMsg: String,
-    )(implicit size: TupleSize[A]
     ): Validator[A] =
-    Predicate(value, p, errMsg, size)
+    Predicate(value, p, errMsg)
 
   final case class Predicate[A](
       value: A,
       p: A => Boolean,
-      msg: String,
-      size: TupleSize[A])
+      msg: String)
       extends Validator[A]
 
   final case class Both[A, B, C](
@@ -50,7 +43,7 @@ object Validator {
         errors: List[String],
       ): List[String] =
       v match {
-        case Validator.Predicate(v, f, errMsg, _) =>
+        case Validator.Predicate(v, f, errMsg) =>
           if (f(v)) errors else errMsg :: errors
 
         case both: Validator.Both[a, b, c] =>
@@ -59,44 +52,34 @@ object Validator {
 
     private def buildTuple(v: Validator[A]): A =
       v match {
-        case Validator.Predicate(v, _, _, _) =>
+        case Validator.Predicate(v, _, _) =>
           v
-        case b @ Validator.Both(_, _, _) =>
-          val size = b.tupleSize
-          println("SIZE: " + size)
+        case b: Validator.Both[_, _, _] =>
+          val size = b.z.size
+          println(s"Res $size")
           val array: Array[Any] = Array.ofDim(size)
-          fillArray(array, v, 0, List.empty)
-          arrayToTuple[A](array, size)
+          initArray(0, array, v, List.empty)
+          b.z.toTuple(array)
       }
 
-    private def fillArray(
+    @tailrec final def initArray(
+        ind: Int,
         array: Array[Any],
         v: Validator[_],
-        ind: Int,
         next: List[Validator[_]],
       ): Array[Any] =
       v match {
         case Both(lhs, rhs, _) =>
-          fillArray(array, lhs, ind, rhs :: next)
+          initArray(ind, array, lhs, rhs :: next)
         case c: Predicate[_] =>
           println(s"$ind - ${c.value}")
           array.update(ind, c.value)
           next match {
             case h :: tail =>
-              fillArray(array, h, ind + 1, tail)
+              initArray(ind + 1, array, h, tail)
             case Nil =>
               array
           }
-      }
-
-    private def arrayToTuple[T](array: Array[Any], tupleSize: Int): T =
-      // println(s"Converting array ${array.mkString(",")} to tuple of size $tupleSize")
-      tupleSize match {
-        case 1 => array(0).asInstanceOf[T]
-        case 2 => (array(0), array(1)).asInstanceOf[T]
-        case 3 => (array(0), array(1), array(2)).asInstanceOf[T]
-        case 4 => (array(0), array(1), array(2), array(3)).asInstanceOf[T]
-        case 5 => (array(0), array(1), array(2), array(3), array(4)).asInstanceOf[T]
       }
   }
 
