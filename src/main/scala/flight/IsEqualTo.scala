@@ -1,6 +1,6 @@
 package flight
 
-@scala.annotation.implicitNotFound("Flight constraint violation: Actual ${Out} but expected ${In}")
+@scala.annotation.implicitNotFound("Flight constraint violation: Found ${Out} but expected ${In}")
 sealed trait IsEqualTo[-In, +Out]
 
 object IsEqualTo {

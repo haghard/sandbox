@@ -1,15 +1,13 @@
 import sbt._
 
 val scala2Version = "2.13.16"
-val scala3Version = "3.3.0"
+//val scala3Version = "3.3.0"
 //val scala3Version = "3.4.2"
-//val scala3Version = "3.6.3"
+val scala3Version = "3.6.3"
 
-//https://repo1.maven.org/maven2/com/lihaoyi/ammonite_3.4.2/3.0.0-M2-9-88291dd8/
+//https://repo1.maven.org/maven2/com/lihaoyi/ammonite-compiler_3.6.3/3.0.2/
+val AmmoniteVersion = "3.0.2"
 //val AmmoniteVersion = "3.0.0-M2-9-88291dd8"
-
-//val AmmoniteVersion = "3.0.1"
-//val AmmoniteVersion = "3.0.0"
 
 val scalac3_Options = Seq(
   "-deprecation",
@@ -77,7 +75,8 @@ val scala2_13_Options = Seq(
   // don't bring value in cross-built projects
   "-Xsource:3-cross",
 
-  "-target:jvm-17",
+  "-target:21",
+  "-release:21",
   "-explaintypes", // Explain type errors in more detail.
   "-feature", // Emit warning and location for usages of features that should be imported explicitly.
   "-language:existentials", // Existential types (besides wildcard types) can be written and inferred
@@ -86,7 +85,8 @@ val scala2_13_Options = Seq(
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
-
+  "-Vimplicits", // makes the compiler print implicit resolution chains when no implicit value can be found
+  
   //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
 
   /*
@@ -129,7 +129,6 @@ val scala2_13_Options = Seq(
       any:e says that for any other kind of warning, signal it via an error
   */
   "-Wconf:cat=deprecation:ws,any:e",
-  //OR
   //"-Wconf:cat=other-match-analysis:error", //Make only some warnings fatal: Transform exhaustivity warnings into errors.
 )
 
@@ -139,13 +138,13 @@ lazy val root = project
     name := "sandbox",
     version := "0.1.0",
 
+    javacOptions ++= Seq("-source", "21", "-target", "21"),
+
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",
       "dev.zio"   %% "izumi-reflect" % "2.3.8",
-      //"com.lihaoyi" % "ammonite" % AmmoniteVersion % "test" cross CrossVersion.full
+      "com.lihaoyi" % "ammonite" % AmmoniteVersion % "test" cross CrossVersion.full
     ),
-    
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test,
 
     Compile / scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -169,24 +168,20 @@ scalafmtOnCompile := true
 addCommandAlias("c", "compile")
 addCommandAlias("r", "reload")
 
-
 //for ammonite
-//run / fork := true
+run / fork := false
 
 // ammonite repl
-/*
-
 Test / sourceGenerators += Def.task {
   val file = (Test / sourceManaged).value / "amm.scala"
   IO.write(file, """object amm extends App { ammonite.Main().run() }""")
   Seq(file)
 }.taskValue
-*/
 
 
-
-//++3.3.1
-//++3.4.2
+//++3.6.3
 //++2.13.16
+//show javacOptions
 //show scalacOptions
+
 

@@ -28,7 +28,7 @@ object Validator {
   final case class Both[A, B, C](
       lhs: Validator[A],
       rhs: Validator[B],
-      z: Zipper.WithOut[A, B, C])
+      zip: Zipper.WithOut[A, B, C])
       extends Validator[C]
 
   implicit class ValidatorOps[A](val self: Validator[A]) extends AnyVal {
@@ -55,11 +55,10 @@ object Validator {
         case Validator.Predicate(v, _, _) =>
           v
         case b: Validator.Both[_, _, _] =>
-          val size = b.z.size
-          println(s"Res $size")
-          val array: Array[Any] = Array.ofDim(size)
+          val size = b.zip.size
+          val array = Array.ofDim[Any](size)
           initArray(0, array, v, List.empty)
-          b.z.toTuple(array)
+          b.zip.toTuple(array)
       }
 
     @tailrec final def initArray(
@@ -72,7 +71,7 @@ object Validator {
         case Both(lhs, rhs, _) =>
           initArray(ind, array, lhs, rhs :: next)
         case c: Predicate[_] =>
-          println(s"$ind - ${c.value}")
+          // println(s"$ind - ${c.value}")
           array.update(ind, c.value)
           next match {
             case h :: tail =>
@@ -95,12 +94,10 @@ object ValidatorProgram extends App {
 
   val row = DbRow(3, 42.2, "hello", Some(0xff.toByte), List(1, 2, 3))
 
-  val validator1 =
-    row.a.validate("aaa")(_ > -4) ++
-      row.b.validate("bbb")(_ == 42.2) ++
-      row.c.validate("ccc")(_.startsWith("he")) ++
-      row.aOpt.validate("ddd")(_.isDefined) ++
+  val validator =
+    row.a.validate("aaa")(_ > -4) ++ row.b.validate("bbb")(_ == 42.2) ++
+      row.c.validate("ccc")(_.startsWith("he")) ++ row.aOpt.validate("ddd")(_.isDefined) ++
       row.digits.validate("eee")(_.forall(_ > 0))
 
-  println(validator1.run)
+  println(validator.run)
 }
