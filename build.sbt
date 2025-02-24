@@ -86,6 +86,7 @@ val scala2_13_Options = Seq(
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
   "-Vimplicits", // makes the compiler print implicit resolution chains when no implicit value can be found
+  "-Ylog-classpath", //log classpath
   
   //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
 
