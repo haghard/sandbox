@@ -7,7 +7,6 @@ val scala3Version = "3.6.3"
 
 //https://repo1.maven.org/maven2/com/lihaoyi/ammonite-compiler_3.6.3/3.0.2/
 val AmmoniteVersion = "3.0.2"
-//val AmmoniteVersion = "3.0.0-M2-9-88291dd8"
 
 val scalac3_Options = Seq(
   "-deprecation",
@@ -140,6 +139,7 @@ lazy val root = project
     version := "0.1.0",
 
     javacOptions ++= Seq("-source", "21", "-target", "21"),
+    javaHome := Some(file("/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/")),
 
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-contrib" % "0.3.0",

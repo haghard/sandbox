@@ -53,15 +53,15 @@ object ValidatedValue {
     }
 
   implicit class ValueOps[+T](private val v: T) extends AnyVal {
-    def validate(precondition: String)(f: T => Boolean): ValidatedValue[T] =
-      if (f(v)) ValidatedValue.Valid(v) else ValidatedValue.Invalid(List(precondition))
+    def cond(msg: String)(f: T => Boolean): ValidatedValue[T] =
+      if (f(v)) ValidatedValue.Valid(v) else ValidatedValue.Invalid(List(msg))
   }
 
   implicit class ListOps[+T](private val list: List[T]) extends AnyVal {
     def validate(precondition: String)(f: T => Boolean): ValidatedValue[List[T]] = {
       val (_, errs) =
         list
-          .map(r => r.validate(s"$precondition but found $r")(f))
+          .map(r => r.cond(s"$precondition but found $r")(f))
           .foldLeft((List.empty[Valid[_]], List.empty[Invalid])) {
             case ((l, r), c) =>
               c match {
@@ -85,11 +85,11 @@ object ValidatedValueProgram extends App {
     ValidatedValue.fromOpt(maybeRow, "Empty row").flatMap { row =>
       row
         .a
-        .validate("aaa")(_ > 4)
-        .zipWith(row.b.validate("bbb")(_ == 42.2))((_, b) => b) // lose a
-        .zip(row.c.validate("ccc")(_.startsWith("h")))
-        .zip(row.aOpt.validate("ddd")(_.find(_ < 0x1f.toByte).nonEmpty))
-        .zip(row.digits.size.validate("nonEmpty")(_ > 0))
+        .cond("aaa")(_ > 4)
+        .zipWith(row.b.cond("bbb")(_ == 42.2))((_, b) => b) // lose a
+        .zip(row.c.cond("ccc")(_.startsWith("h")))
+        .zip(row.aOpt.cond("ddd")(_.find(_ < 0x1f.toByte).nonEmpty))
+        .zip(row.digits.size.cond("nonEmpty")(_ > 0))
         .zip(row.digits.validate("ShouldBe > 2")(_ > 2))
         .flatten
     }
@@ -98,20 +98,13 @@ object ValidatedValueProgram extends App {
 
   val ok =
     ValidatedValue.fromOpt(maybeRow, "Empty row").flatMap { row =>
-
       row
         .a
-        .validate("aaa")(_ > -4)
-        .zip(row.b.validate("bbb")(_ != 43.2))
-        .flatten
-
-      row
-        .a
-        .validate("aaa")(_ > -4)
-        .zipWith(row.b.validate("bbb")(_ != 43.2))((_, b) => b) // lose a
-        .zip(row.c.validate("ccc")(_.startsWith("h")))
-        .zip(row.aOpt.validate("ddd")(_.find(_ < 0x1f.toByte).nonEmpty))
-        .zip(row.digits.size.validate("nonEmpty")(_ > 0))
+        .cond("aaa")(_ > -4)
+        .zipWith(row.b.cond("bbb")(_ != 43.2))((_, b) => b) // lose a
+        .zip(row.c.cond("ccc")(_.startsWith("h")))
+        .zip(row.aOpt.cond("ddd")(_.find(_ < 0x1f.toByte).nonEmpty))
+        .zip(row.digits.size.cond("nonEmpty")(_ > 0))
         .zip(row.digits.validate("ShouldBe < 5")(_ < 5))
         .flatten
     }

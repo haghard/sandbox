@@ -84,8 +84,8 @@ object Validator {
 
   implicit class Ops[A](val v: A) extends AnyVal {
 
-    def validate(errMsg: String)(f: A => Boolean): Validator[A] =
-      apply(v, f, errMsg)
+    def cond(msg: String)(f: A => Boolean): Validator[A] =
+      Validator(v, f, msg)
   }
 }
 
@@ -95,9 +95,9 @@ object ValidatorProgram extends App {
   val row = DbRow(3, 42.2, "hello", Some(0xff.toByte), List(1, 2, 3))
 
   val validator =
-    row.a.validate("aaa")(_ > -4) ++ row.b.validate("bbb")(_ == 42.2) ++
-      row.c.validate("ccc")(_.startsWith("he")) ++ row.aOpt.validate("ddd")(_.isDefined) ++
-      row.digits.validate("eee")(_.forall(_ > 0))
+    row.a.cond("aaa")(_ > -4) ++ row.b.cond("bbb")(_ == 42.2) ++
+      row.c.cond("ccc")(_.startsWith("he")) ++ row.aOpt.cond("ddd")(_.isDefined) ++
+      row.digits.cond("eee")(_.forall(_ > 0))
 
   println(validator.run)
 }
